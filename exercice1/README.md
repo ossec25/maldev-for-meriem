@@ -86,3 +86,19 @@ Sortie réelle
 loader initialisé
 loader prêt
 taille payload = 8
+
+Validation de l’outil msfvenom sur la VM Linux
+
+But
+Vérifier que msfvenom est installé et accessible sur linux-msf-meriem. Ce test valide seulement l’environnement. Aucun payload n’est généré ici.
+
+Commandes exécutées sur linux-msf-meriem
+command -v msfvenom
+msfvenom --help | head -n 6
+
+Sortie observée
+/usr/bin/msfvenom
+MsfVenom, a Metasploit standalone payload generator.
+Also a replacement for msfpayload and msfencode.
+Usage: /opt/metasploit-framework/bin/../embedded/framework/msfvenom [options] <var=val>
+Example: /opt/metasploit-framework/bin/../embedded/framework/msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP> -f exe -o payload.exe
