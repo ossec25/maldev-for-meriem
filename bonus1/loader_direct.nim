@@ -1,50 +1,32 @@
 import winim/lean
+import strformat
 
-when defined(windows):
-echo "loader initialisé"
-else:
-echo "Ce programme est prévu pour Windows uniquement"
+when not defined(windows):
+  {.error: "Ce programme nécessite Windows".}
 
-echo "loader prêt"
+type
+  DemoFunc = proc() {.cdecl.}
 
-var payload = [byte 0xFC, 0x48, 0x83, 0xE4, 0xF0, 0xE8, 0xC0, 0x00] # 8 bytes factices
+var payload: array[8, byte] = [
+  byte 0xFC, 0x48, 0x83, 0xE4,
+  0xF0, 0xE8, 0xC0, 0x00
+]
 
-echo "taille payload = ", payload.len
+proc demoPointerCast[I](data: array[I, byte]): bool =
+  echo "[*] Démo pointer casting, sans exécution"
+  let mem = VirtualAlloc(nil, cast[SIZE_T](I), MEM_COMMIT or MEM_RESERVE, PAGE_READWRITE)
+  if mem == nil:
+    echo "[-] VirtualAlloc a échoué. err=", GetLastError()
+    return false
+  defer:
+    discard VirtualFree(mem, 0, MEM_RELEASE)
+    echo "[*] Mémoire libérée"
 
-proc injectLocal[I, T](shellcode: var array[I, T]): void =
-
-# Allocation mémoire pour le shellcode
-
-let executable_memory = VirtualAlloc(
-nil,
-len(shellcode),
-MEM_COMMIT,
-PAGE_EXECUTE_READ_WRITE
-)
-
-# Copie du shellcode dans la mémoire allouée
-
-copyMem(executable_memory, shellcode[0].addr, len(shellcode))
-
-# Définition d'un type pour le shellcode comme fonction
-
-type ShellcodeProc = proc() {.noconv.}
-
-# Conversion de l'adresse mémoire en fonction
-
-let runShellcode = cast[ShellcodeProc](executable_memory)
-
-echo "Execution du shellcode..."
-runShellcode()  # Appel direct
-
-proc main =
-injectLocal(payload)
+  copyMem(mem, unsafeAddr data[0], I)
+  let f = cast[DemoFunc](mem)
+  discard f
+  echo fmt"[+] Cast effectué vers un type proc (adresse 0x{cast[int](mem):X}), aucune exécution"
+  return true
 
 when isMainModule:
-main()
-
-
-
-
-
-  
+  discard demoPointerCast(payload)
