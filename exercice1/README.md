@@ -112,3 +112,17 @@ loader prêt
 taille payload = 8
 
 Après ces affichages, l’exécution se termine et Nim remonte un échec d’exécution du binaire lors du lancement avec nim c -r.
+
+Bonus Exercice 1, exécution sans CreateThread
+
+Objectif
+Exécuter un code en mémoire sans créer un nouveau thread via l’API CreateThread.
+
+Approche
+Le programme alloue une zone mémoire exécutable, copie le payload dans cette zone, puis transfère l’exécution en appelant directement l’adresse mémoire comme une fonction. Cette approche repose sur un casting de pointeur vers un type fonction.
+
+État
+Le loader compile.
+Les messages de debug s’affichent.
+La taille du payload factice est affichée.
+Le binaire se termine avec un code de sortie non nul dans mon test, donc je conserve ce bonus comme une preuve d’implémentation de la technique et un point à valider avec le cours.
