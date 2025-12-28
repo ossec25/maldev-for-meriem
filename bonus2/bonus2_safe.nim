@@ -1,5 +1,6 @@
 import winim
 import strformat
+import strutils
 import os  # Pour arguments ligne de commande
 
 # ==============================================
