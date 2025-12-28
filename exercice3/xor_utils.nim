@@ -2,6 +2,7 @@
 # ==============================================
 # UTILITAIRES XOR POUR OBFUSCATION
 # ==============================================
+import std/[times, strutils]
 
 # --- Fonction de chiffrement/déchiffrement XOR ---
 proc xorCrypt*(data: var openArray[byte], key: openArray[byte]) =
@@ -19,7 +20,7 @@ proc generateXorKey*(length: int): seq[byte] =
   result = newSeq[byte](length)
   
   # Utiliser le temps comme seed (simple mais suffisant pour demo)
-  import times
+ 
   var seed = epochTime().int
   
   for i in 0..<length:
