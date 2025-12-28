@@ -1,4 +1,4 @@
-﻿import winim          # ← VERSION COMPLÈTE (pas lean)
+﻿import winim          
 import strformat
 import strutils
 
